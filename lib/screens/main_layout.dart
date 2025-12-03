@@ -25,6 +25,7 @@ class _MainLayoutState extends State<MainLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      body: _screens[_currentIndex],
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(12.0),
         child: ClipRRect(

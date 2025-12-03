@@ -5,6 +5,10 @@ const checkInSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    studentName: { // <--- Add this field
+        type: String,
+        required: true
+    },
     checkInTime: {
         type: Date,
         default: Date.now 

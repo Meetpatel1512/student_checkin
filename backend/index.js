@@ -25,18 +25,22 @@ mongoose.connect('mongodb://127.0.0.1:27017/student_checkin_db')
 // --- 2. API ROUTES (As requested in PDF) ---
 
 // A. POST /students -> Add a new student
+// A. POST /students -> Add a new student
 app.post('/students', async (req, res) => {
     try {
         const { name, email, studentId } = req.body;
         
-        // Create new student
         const newStudent = new Student({ name, email, studentId });
         await newStudent.save();
         
         res.status(201).json({ message: "Student added successfully", student: newStudent });
     } catch (error) {
-        // Handle duplicate ID or validation errors
-        res.status(400).json({ error: error.message });
+        // ⚠️ NEW: Check for Duplicate ID Error (MongoDB Code 11000)
+        if (error.code === 11000) {
+             return res.status(400).json({ message: "Error: Student ID already exists!" });
+        }
+        // Handle other validation errors
+        res.status(400).json({ message: error.message });
     }
 });
 
@@ -61,7 +65,10 @@ app.post('/checkin', async (req, res) => {
             return res.status(404).json({ message: "Student ID not found" });
         }
 
-        const newCheckIn = new CheckIn({ studentId });
+        const newCheckIn = new CheckIn({ 
+            studentId: student.studentId,
+            studentName: student.name 
+        });
         await newCheckIn.save();
 
         res.status(201).json({ message: "Check-in successful", checkIn: newCheckIn });
