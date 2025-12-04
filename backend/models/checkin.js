@@ -5,7 +5,7 @@ const checkInSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    studentName: { // <--- Add this field
+    studentName: { 
         type: String,
         required: true
     },

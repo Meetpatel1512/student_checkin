@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:student_checkin/screens/main_layout.dart';
+import 'package:student_checkin/screens/login_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: MainLayout(),
+      home: LoginScreen(),
     );
   }
 }

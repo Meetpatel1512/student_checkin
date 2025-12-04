@@ -14,7 +14,11 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true 
-    }
+    },
+    pincode: { type: String },
+    district: { type: String },
+    state: { type: String },
+    country: { type: String }
 });
 
 module.exports = mongoose.model('Student', studentSchema);

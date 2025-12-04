@@ -20,8 +20,6 @@ class _MainLayoutState extends State<MainLayout> {
     const CheckInScreen(),
   ];
 
-  final List<Color> _bgColors = [Colors.black, Colors.blue, Colors.green];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

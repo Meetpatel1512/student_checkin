@@ -2,49 +2,66 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-
-// Import Models
+const jwt = require('jsonwebtoken'); 
 const Student = require('./models/student');
 const CheckIn = require('./models/checkin');
+const Admin = require('./models/admin'); 
 
 const app = express();
-const PORT = 3000; // Your server will run on this port
+const PORT = 3000;
+const SECRET_KEY = "my_secret_key_123"; 
 
-// Middleware
-app.use(cors()); // Allow Flutter to access this
-app.use(bodyParser.json()); // Parse JSON data sent from Flutter
+app.use(cors());
+app.use(bodyParser.json());
 
-// --- 1. CONNECT TO MONGODB ---
-// Replace 'student_checkin_db' with your preferred database name.
-// If you are using MongoDB Atlas (Cloud), paste your connection string here.
+
 mongoose.connect('mongodb://127.0.0.1:27017/student_checkin_db')
-    .then(() => console.log('MongoDB Connected Successfully'))
-    .catch(err => console.log('MongoDB Connection Error:', err));
+    .then(async () => {
+        console.log('MongoDB Connected');
+        
+        const adminCount = await Admin.countDocuments();
+        if (adminCount === 0) {
+            await new Admin({ username: "admin", password: "admin123" }).save();
+            console.log("👑 Admin Account Created: (User: admin, Pass: admin123)");
+        }
+    })
+    .catch(err => console.log('❌ DB Error:', err));
 
 
-// --- 2. API ROUTES (As requested in PDF) ---
+app.post('/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        
+       
+        const admin = await Admin.findOne({ username, password });
+        
+        if (!admin) {
+            return res.status(401).json({ message: "Invalid Credentials" });
+        }
 
-// A. POST /students -> Add a new student
-// A. POST /students -> Add a new student
+       
+        const token = jwt.sign({ id: admin._id }, SECRET_KEY, { expiresIn: '1h' });
+
+        res.status(200).json({ message: "Login Successful", token });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
 app.post('/students', async (req, res) => {
     try {
-        const { name, email, studentId } = req.body;
-        
-        const newStudent = new Student({ name, email, studentId });
+        const { name, email, studentId, pincode, district, state, country } = req.body;
+        const newStudent = new Student({ name, email, studentId, pincode, district, state, country });
         await newStudent.save();
-        
-        res.status(201).json({ message: "Student added successfully", student: newStudent });
+        res.status(201).json({ message: "Student added successfully" });
     } catch (error) {
-        // ⚠️ NEW: Check for Duplicate ID Error (MongoDB Code 11000)
-        if (error.code === 11000) {
-             return res.status(400).json({ message: "Error: Student ID already exists!" });
-        }
-        // Handle other validation errors
+        if (error.code === 11000) return res.status(400).json({ message: "Error: Student ID already exists!" });
         res.status(400).json({ message: error.message });
     }
 });
 
-// B. GET /students -> Get all students (for Home Screen)
+
 app.get('/students', async (req, res) => {
     try {
         const students = await Student.find();
@@ -54,33 +71,24 @@ app.get('/students', async (req, res) => {
     }
 });
 
-// C. POST /checkin -> Record a check-in
+
 app.post('/checkin', async (req, res) => {
     try {
         const { studentId } = req.body;
-        
-        // Check if student exists first
-        const studentExists = await Student.findOne({ studentId });
-        if (!studentExists) {
-            return res.status(404).json({ message: "Student ID not found" });
-        }
+        const student = await Student.findOne({ studentId });
+        if (!student) return res.status(404).json({ message: "Student ID not found" });
 
-        const newCheckIn = new CheckIn({ 
-            studentId: student.studentId,
-            studentName: student.name 
-        });
+        const newCheckIn = new CheckIn({ studentId: student.studentId, studentName: student.name });
         await newCheckIn.save();
-
-        res.status(201).json({ message: "Check-in successful", checkIn: newCheckIn });
+        res.status(201).json({ message: "Check-in successful" });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// D. GET /checkins -> Get check-in history
+
 app.get('/checkins', async (req, res) => {
     try {
-        // Sort by newest first
         const checkins = await CheckIn.find().sort({ checkInTime: -1 });
         res.status(200).json(checkins);
     } catch (error) {
@@ -88,7 +96,4 @@ app.get('/checkins', async (req, res) => {
     }
 });
 
-// --- 3. START SERVER ---
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
