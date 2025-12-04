@@ -104,41 +104,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Widget _buildStudentCard(Student student) {
-  //   return Card(
-  //     elevation: 0,
-  //     color: Colors.white,
-  //     shape: RoundedRectangleBorder(
-  //       side: BorderSide(color: Colors.grey.shade200),
-  //       borderRadius: BorderRadius.circular(12),
-  //     ),
-  //     margin: const EdgeInsets.only(bottom: 12.0),
-  //     child: ListTile(
-  //       leading: CircleAvatar(
-  //         backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
-  //         child: const Icon(Iconsax.user, color: Color(0xFF4F46E5)),
-  //       ),
-  //       title: Text(
-  //         student.name,
-  //         style: const TextStyle(fontWeight: FontWeight.w600),
-  //       ),
-  //       subtitle: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           const SizedBox(height: 4),
-  //           Text(
-  //             "ID: ${student.studentId}",
-  //             style: const TextStyle(fontWeight: FontWeight.bold),
-  //           ),
-  //           Text(
-  //             student.email,
-  //             style: TextStyle(color: Colors.grey[600], fontSize: 12),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
   Widget _buildStudentCard(Student student) {
     return Card(
       elevation: 0,
@@ -148,51 +113,28 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(12),
       ),
       margin: const EdgeInsets.only(bottom: 12.0),
-
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => StudentDetailScreen(student: student),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+          child: const Icon(Iconsax.user, color: Color(0xFF4F46E5)),
+        ),
+        title: Text(
+          student.name,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Text(
+              "ID: ${student.studentId}",
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Theme.of(
-                context,
-              ).primaryColor.withValues(alpha: 0.1),
-              child: const Icon(Iconsax.user, color: Color(0xFF4F46E5)),
+            Text(
+              student.email,
+              style: TextStyle(color: Colors.grey[600], fontSize: 12),
             ),
-            title: Text(
-              student.name,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 4),
-                Text(
-                  "ID: ${student.studentId}",
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  student.email,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                ),
-              ],
-            ),
-
-            trailing: const Icon(
-              Iconsax.arrow_right_3,
-              size: 16,
-              color: Colors.grey,
-            ),
-          ),
+          ],
         ),
       ),
     );
